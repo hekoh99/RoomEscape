@@ -5,30 +5,47 @@ int main() {
 
 	auto open1 = false;
 	auto is_moved = false;
+
+	bool fill1 = false;
+	bool fill2 = false;
+	bool fill3 = false;
+	int collect = 0;
 	
 	ScenePtr scene1 = Scene::create("1번 방", "images/배경-1.png");
 	ScenePtr scene2 = Scene::create("2번 방", "images/배경-2.png");
 	ScenePtr scene3 = Scene::create("3번 방", "images/배경-3.png");
 
+	auto box = Object::create("images/상자.png", scene2, 550, 250);
+	box->setScale(0.2f);
+
 	auto key = Object::create("images/열쇠.png", scene1, 600, 150);
 	auto door1 = Object::create("images/문-오른쪽-닫힘.png", scene1, 800, 270);
 	auto orange = Object::create("images/주황이.png", scene1, 900, 100);
 	auto star1 = Object::create("images/별.png", scene1, 900, 100, false);
-	auto star2 = Object::create("images/별.png", scene2, 900, 100);
-	auto star3 = Object::create("images/별.png", scene3, 900, 100);
+	auto star2 = Object::create("images/별.png", scene2, 500, 500, false);
+	auto star3 = Object::create("images/별.png", scene3, 290, 600);
+	auto paper = Object::create("images/종이.png", scene2, 600, 180, false);
+	paper->setScale(0.4f);
 	star1->setScale(0.5f);
 	star2->setScale(0.5f);
 	star3->setScale(0.5f);
 	star1->setOnMouseCallback([&](ObjectPtr object, int x, int y, MouseAction action)->bool {
-		star1->pick();
+		
+		if (collect == 0) {
+			star1->pick();
+		}
 		return true;
 		});
 	star2->setOnMouseCallback([&](ObjectPtr object, int x, int y, MouseAction action)->bool {
-		star2->pick();
+		if (collect ==  0) {
+			star2->pick();
+		};
 		return true;
 		});
 	star3->setOnMouseCallback([&](ObjectPtr object, int x, int y, MouseAction action)->bool {
-		star3->pick();
+		if (collect == 0) {
+			star3->pick();
+		}
 		return true;
 		});
 
@@ -109,10 +126,6 @@ int main() {
 	light->setScale(0.06f);
 	auto is_on = true;
 
-	auto box = Object::create("images/상자.png", scene2, 550, 250);
-	box->setScale(0.2f);
-	auto hint = Object::create("images/암호.png", scene2, 400, 150, false);
-
 	door3->setOnMouseCallback([&](ObjectPtr object, int x, int y, MouseAction action)->bool {
 
 		if (open3 == true) {
@@ -137,14 +150,28 @@ int main() {
 	
 	keypad->setOnMouseCallback([&](ObjectPtr object, int x, int y, MouseAction action)->bool {
 
-		showKeypad("AAAAAB", door3);
+		showKeypad("ORANGE", door3);
 
 		return true;
 	});
 
+	int count = 0;
 	box->setOnMouseCallback([&](ObjectPtr object, int x, int y, MouseAction action)->bool {
+		
+		if (count == 0) {
+			box->setImage("images/상자2.png");
+			count++;
+		}
+		else if (count == 1) {
+			box->setImage("images/상자3.png");
+			count++;
+		}
+		else if (count == 2) {
+			box->setImage("images/상자4.png");
+			count++;
+			paper->show();
+		}
 
-		showMessage("여기엔 아무 것도 없네");
 		return true;
 	});
 
@@ -154,13 +181,13 @@ int main() {
 			is_on = false;
 			light->setImage("images/off스위치.png");
 			scene2->setLight(0.3f);
-			hint->show();
+			star2->show();
 		}
 		else if(is_on == false) {
 			is_on = true;
 			light->setImage("images/on스위치.png");
 			scene2->setLight(1.0f);
-			hint->hide();
+			star2->hide();
 		}
 		return true;
 	});
@@ -178,11 +205,6 @@ int main() {
 	auto area3 = Object::create("images/투명위치.png", scene3, 1030, 340);
 	area3->setScale(0.5f);
 
-	bool fill1 = false;
-	bool fill2 = false;
-	bool fill3 = false;
-
-	int collect = 0;
 	auto hole = Object::create("images/구멍.png", scene3, 450, 100, false);
 	area1->setOnMouseCallback([&](ObjectPtr object, int x, int y, MouseAction action)->bool {
 		if (fill1==false && star1->isHanded()) {
